@@ -38,7 +38,7 @@ module.exports = {
       filename: "js/lib/vender.bundle.js"
     }),
     new HtmlWebpackPlugin({
-      title: 'hexo博客客户端',
+      title: 'hugo客户端 by cherry2',
       filename: 'index.html',
       template: path.join(__dirname, 'dev/templates/index.html'),
       hash: true,
