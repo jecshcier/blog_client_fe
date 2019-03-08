@@ -200,7 +200,7 @@ class ToolBar extends React.Component {
     app.once('getSystemKeyCallback', (event, data) => {
       console.log(data)
       app.send('execCommand', {
-        command: 'cd ' + this.props.rootDir + ' && /usr/local/bin/hugo',
+        command: 'cd ' + this.props.rootDir + ' && /usr/local/bin/hugo -F --buildFuture',
         options: {
           cwd: this.props.rootDir,
           env: null,
