@@ -48,7 +48,7 @@ class Main extends React.Component {
         const articleArr = []
         for (let i = 0; i < data.length; i++) {
           let fileNameArr = data[i].split('.')
-          if (fileNameArr[fileNameArr.length - 1] === 'md') {
+          if (fileNameArr[fileNameArr.length - 1] === 'md' && data[i] !== '_index.md') {
             articleArr.push({
               path: hexoRoot + '/content/post/' + data[i],
               fileName:data[i],

@@ -84,7 +84,7 @@ class ToolBar extends React.Component {
   }
 
   handleOk = (data) => {
-    let articleContent = `---\ntitle: ${data.value}\ncategories: ${data.currentSort}\ndate: ${moment().format("YYYY-MM-DD HH:mm:ss")}\ntags: [${data.currentTag}]\nkeywords: [${data.currentKeywords}]\n---\n\n\n<!-- more -->`
+    let articleContent = `---\ntitle: ${data.value}\ncategories: \n - ${data.currentSort}\ndate: ${moment().format("YYYY-MM-DD HH:mm:ss")}\ntags: [${data.currentTag}]\nkeywords: [${data.currentKeywords}]\n---\n\n\n<!-- more -->`
     app.once('createFileCallback', (event, data) => {
       if (data) {
         alert(data.message)
@@ -193,16 +193,18 @@ class ToolBar extends React.Component {
 
   generator = () => {
     console.log(this.gen)
+    const _this = this
     if (this.gen) {
+      message.error('操作过于频繁！')
       return false
     }
     this.gen = true
     app.once('getSystemKeyCallback', (event, data) => {
       console.log(data)
       app.send('execCommand', {
-        command: 'cd ' + this.props.rootDir + ' && /usr/local/bin/hugo -F --buildFuture',
+        command: 'cd ' + _this.props.rootDir + ' && /usr/local/bin/hugo -F --buildFuture',
         options: {
-          cwd: this.props.rootDir,
+          cwd: _this.props.rootDir,
           env: null,
           windowsHide: false,
           maxBuffer: 200 * 1024
@@ -212,7 +214,7 @@ class ToolBar extends React.Component {
       })
     })
     app.once('execCommandCallback', function (event, data) {
-      this.gen = false
+      _this.gen = false
       console.log(data)
       load()
       if (!data.err) {
