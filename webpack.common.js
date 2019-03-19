@@ -4,11 +4,11 @@ const webpack = require('webpack')
 
 module.exports = {
   entry: {
-    main: './dev/index.js',
-    vendor: ['react', 'react-dom', 'antd', 'lodash', 'moment']
+    main: './dev/index.js'
+    // vendor: ['react', 'react-dom', 'antd', 'lodash', 'moment']
   },
   output: {
-    filename: 'js/[name]-[chunkhash].js',
+    filename: 'js/[name]-[hash].js',
     path: path.join(__dirname, "dist")
   },
   module: {
@@ -31,12 +31,35 @@ module.exports = {
     }
     ]
   },
+  optimization: {
+    splitChunks: {
+      chunks: "initial",
+      minSize: 30000,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '-',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    }
+  },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: "vendor",
-      filename: "js/lib/vender.bundle.js"
-    }),
+    // webpack3版本 废弃
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: "vendor",
+    //   filename: "js/lib/vender.bundle.js"
+    // }),
     new HtmlWebpackPlugin({
       title: 'hugo客户端 by cherry2',
       filename: 'index.html',

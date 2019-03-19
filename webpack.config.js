@@ -8,6 +8,7 @@ const ncp = require('ncp')
 const common = require('./webpack.common')
 
 const config = (env) => {
+  console.log(env)
   //init
   if (env.MODE === 'init') {
     return merge(common, {
@@ -19,7 +20,7 @@ const config = (env) => {
   //development
   else if (env.MODE === 'dev') {
     return merge(common, {
-      devtool: "source-map",
+      devtool: "cheap-module-eval-source-map",
       devServer: {
         contentBase: path.join(__dirname, "dist"),
         compress: true,
@@ -31,6 +32,7 @@ const config = (env) => {
   //product
   else {
     return merge.smart(common, {
+      devtool: "cheap-module-source-map",
       module: {
         rules: [{
           test: /\.css$/,
@@ -60,13 +62,13 @@ function copyDevFiles() {
   return new webpack.ProgressPlugin((percentage, message, ...args) => {
     if (percentage === 1) {
       console.log("编译完成，正在拷贝文件---->")
-      ncp.limit = 16;
+      ncp.limit = 16
       ncp(path.join(__dirname, 'dev/lib'), path.join(__dirname, 'dist/lib'), function (err) {
         if (err) {
-          return console.error(err);
+          return console.error(err)
         }
-        console.log('文件拷贝完成！');
-      });
+        console.log('文件拷贝完成！')
+      })
     }
   })
 }
