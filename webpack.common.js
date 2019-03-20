@@ -39,7 +39,7 @@ module.exports = {
       maxAsyncRequests: 5,
       maxInitialRequests: 3,
       automaticNameDelimiter: '-',
-      name: true,
+      name: 'lib/vender.bundle',
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
@@ -54,7 +54,6 @@ module.exports = {
     }
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     // webpack3版本 废弃
     // new webpack.optimize.CommonsChunkPlugin({
     //   name: "vendor",
@@ -65,7 +64,7 @@ module.exports = {
       filename: 'index.html',
       template: path.join(__dirname, 'dev/templates/index.html'),
       hash: true,
-      chunks: ['vendor', 'main'],
+      chunks: ['lib/vender.bundle', 'main'],
       minify: { //压缩HTML文件
         removeComments: true, //移除HTML中的注释
         collapseWhitespace: false //删除空白符与换行符

@@ -4,7 +4,7 @@ const merge = require('webpack-merge')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const path = require('path')
-const ncp = require('ncp')
+const fs = require('fs-extra')
 const common = require('./webpack.common')
 
 const config = (env) => {
@@ -26,7 +26,10 @@ const config = (env) => {
         compress: true,
         port: 9000,
         hot: true
-      }
+      },
+      plugins: [
+        new webpack.HotModuleReplacementPlugin()
+      ]
     })
   }
   //product
@@ -59,16 +62,14 @@ const config = (env) => {
  * @returns {webpack.ProgressPlugin}
  */
 function copyDevFiles() {
-  return new webpack.ProgressPlugin((percentage, message, ...args) => {
+  return new webpack.ProgressPlugin(async (percentage, message, ...args) => {
     if (percentage === 1) {
       console.log("编译完成，正在拷贝文件---->")
-      ncp.limit = 16
-      ncp(path.join(__dirname, 'dev/lib'), path.join(__dirname, 'dist/lib'), function (err) {
-        if (err) {
-          return console.error(err)
-        }
-        console.log('文件拷贝完成！')
-      })
+      try {
+        await fs.copy(path.join(__dirname, 'dev/lib'), path.join(__dirname, 'dist/lib'))
+      } catch (err) {
+        console.log(err)
+      }
     }
   })
 }
