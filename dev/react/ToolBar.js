@@ -31,7 +31,7 @@ class ToolBar extends React.Component {
           url: this.props.rootDir + '/blog.config.js'
         })
       } else {
-        reject("请选择正确的hexo博客路径！")
+        reject("请选择正确的hugo博客路径！")
       }
     })
 
@@ -85,15 +85,16 @@ class ToolBar extends React.Component {
 
   handleOk = (data) => {
     let articleContent = `---\ntitle: ${data.value}\ncategories: \n - ${data.currentSort}\ndate: ${moment().format("YYYY-MM-DD HH:mm:ss")}\ntags: [${data.currentTag}]\nkeywords: [${data.currentKeywords}]\n---\n\n\n<!-- more -->`
+    let articleName = moment().format('YYYY-MM-DD') + '-' + data.value + '.md'
     app.once('createFileCallback', (event, data) => {
       if (data) {
         alert(data.message)
       } else {
-        this.props.reloadArticleArr(this.props.rootDir)
+        this.props.reloadArticleArr(this.props.rootDir, articleName)
       }
     })
     app.send('createFile', {
-      url: this.props.rootDir + '/content/post/' + moment().format('YYYY-MM-DD') + '-' + data.value + '.md',
+      url: this.props.rootDir + '/content/post/' + articleName,
       content: articleContent,
       base64: false,
       callback: 'createFileCallback'
@@ -196,6 +197,11 @@ class ToolBar extends React.Component {
     const _this = this
     if (this.gen) {
       message.error('操作过于频繁！')
+      return false
+    }
+    if (!_this.props.rootDir) {
+      message.error('请选择正确的hugo博客路径')
+      this.gen = true
       return false
     }
     this.gen = true

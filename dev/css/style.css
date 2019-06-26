@@ -44,9 +44,28 @@ body {
 
 .articleList > li {
     cursor: pointer;
-    padding: 10px 5px;
+    padding: 10px 5px 10px 15px;
     border-bottom: 1px solid #ccc;
+    position: relative;
 }
+.articleList > li > span{
+}
+.articleList > li.article-active{
+    background-color: #f5f5f5;
+}
+
+.articleList > li.article-active:before {
+    content:'';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 10px;
+    background: red;
+    height: 100%;
+}
+
+
 
 .editor-view {
     display: flex;
@@ -87,6 +106,12 @@ body {
 .editor-view > div:first-of-type {
     display: flex;
     flex-grow: 1;
+    position: relative;
+    background: #000;
+}
+.editor-pre-view{
+    align-items: center;
+    justify-content: center;
 }
 
 .react-codemirror2 {
@@ -102,18 +127,30 @@ body {
 }
 .editor-bar{
     display: flex;
-    height: 25px;
     flex-shrink: 0;
     align-items: center;
     padding: 5px;
     box-sizing: border-box;
-    background: #7f278f;
     color:#fff;
+    position: absolute;
+    top: 0;
+    right: 35px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 25px;
+    background: rgba(75, 180, 255, 0.24);
+    z-index: 9;
+}
+.editor-bar > span:not(:last-of-type){
+    margin-right: 10px;
 }
 .editor-bar > span{
-    margin-right: 10px;
     cursor: pointer;
 }
 .editor-bar > span > i{
     margin-right: 3px;
+}
+
+.CodeMirror-wrap pre{
+    word-break: break-all;
 }

@@ -6,8 +6,10 @@ class ArticleList extends React.Component{
   constructor(props){
     super(props)
   }
-  changeArticle = (e)=>{
-    this.props.changeCurrentArticle(e.target.getAttribute('data-path'),e.target.getAttribute('data-name'))
+  changeArticle = (index)=>{
+    let arr = Object.values(this.props.articleArr)
+    window.localStorage.setItem("currentArtileName",arr[index].fileName)
+    this.props.changeCurrentArticle(arr[index].path,arr[index].fileName)
   }
 
   componentDidMount(){
@@ -19,7 +21,10 @@ class ArticleList extends React.Component{
     console.log(this.props.articleArr)
     return (<ul className="articleList">
       {this.props.articleArr ? Object.values(this.props.articleArr).map((el,index)=>{
-        return <li key={index} data-path={el.path} data-name={el.fileName} onClick={this.changeArticle}>{el.fileName}</li>
+        const cls = this.props.currentAticle === el.fileName ? 'article-active':''
+        return <li key={`article-${index}`} className={cls} onClick={()=>{
+          this.changeArticle(index)
+        }}><span>{el.fileName}</span></li>
       }):<li>暂无文章</li>}
     </ul>)
   }

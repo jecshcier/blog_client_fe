@@ -20,7 +20,7 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
-    app.once('getSystemCodeCallback', function(event, data) {
+    app.once('getSystemCodeCallback', function (event, data) {
       window.os = data
     })
     app.send('getSystemCode', {
@@ -35,10 +35,12 @@ class Main extends React.Component {
     })
   }
 
-  changeArticleArr = (hexoRoot) => {
+  changeArticleArr = (hexoRoot, activeArticleName) => {
+    activeArticleName = activeArticleName ? activeArticleName : window.localStorage.getItem("currentArtileName") || null
     console.log("================change================")
+    console.log(activeArticleName)
     if (!hexoRoot) {
-      message.error("请选择hexo博客路径！")
+      message.error("请选择hugo博客路径！")
       return false
     }
     app.once('getFolderCallback', (event, data) => {
@@ -51,15 +53,23 @@ class Main extends React.Component {
           if (fileNameArr[fileNameArr.length - 1] === 'md' && data[i] !== '_index.md') {
             articleArr.push({
               path: hexoRoot + '/content/post/' + data[i],
-              fileName:data[i],
+              fileName: data[i],
             })
           }
         }
         this.setState({
-          articleArr: articleArr
+          articleArr: articleArr,
+          current: activeArticleName ? hexoRoot + '/content/post/' + activeArticleName : articleArr[0].path,
+          currentName: activeArticleName ? activeArticleName : articleArr[0].fileName
+        }, () => {
+          let currentPath = activeArticleName ? hexoRoot + '/content/post/' + activeArticleName : articleArr[0].path
+          let currentName = activeArticleName ? activeArticleName : articleArr[0].fileName
+          console.log(currentName)
+          console.log(currentPath)
+          this.changeCurrentArticle(currentPath, currentName)
         })
       } else {
-        message.error("请选择正确的hexo博客路径！")
+        message.error("请选择正确的hugo博客路径！")
         this.setState({
           hexoRoot: '',
           articleArr: null
@@ -75,15 +85,20 @@ class Main extends React.Component {
   changeCurrentArticle = (article, name) => {
     console.log("===============文章名称================")
     console.log(name)
+    console.log("===============文章路径================")
+    console.log(article)
+
     app.once('loadFileCallback', (event, data) => {
-      if(!data.err){
+      if (!data.err) {
         this.setState({
           current: article,
           currentName: name,
           content: data.toString()
         })
-      }else{
-        console.log(data)
+      } else {
+        message.error('找不到上次打开的文章')
+        window.localStorage.removeItem('currentArtileName')
+        this.changeArticleArr(this.state.hexoRoot)
       }
     })
     app.send('loadFile', {
@@ -114,10 +129,15 @@ class Main extends React.Component {
                reloadArticleArr={this.changeArticleArr}/>,
       <div className="user-view" key="userView">
         <ArticleList key="list" rootDir={this.state.hexoRoot} changeCurrentArticle={this.changeCurrentArticle}
-                     articleArr={this.state.articleArr} changeArticleArr={this.changeArticleArr}/>
+                     articleArr={this.state.articleArr}
+                     currentAticle={this.state.currentName}
+                     changeArticleArr={this.changeArticleArr}/>
         <Editor key="edit" name={this.state.current} article={this.state.currentName} rootDir={this.state.hexoRoot}
                 content={this.state.content}
-                changeContent={this.changeEditorContent}/>
+                changeContent={this.changeEditorContent}
+                changeRootDir={this.changeRootDir}
+                reloadArticleArr={this.changeArticleArr}
+        />
       </div>
     ]
   }
