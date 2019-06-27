@@ -311,16 +311,16 @@ class Editor extends React.Component {
             }}
           />
           <div className="editor-bar">
-            <span onClick={this.saveArticle}>
+            <span onClick={this.saveArticle} title={`保存文章`}>
               <i className="fa fa-floppy-o" aria-hidden="true"></i>
             </span>
-            <span onClick={this.insertCode.bind(this)}>
+            <span onClick={this.insertCode.bind(this)} title={`插入代码`}>
               <i className="fa fa-code" aria-hidden="true"></i>
             </span>
-            <span onClick={this.insertImage.bind(this)}>
+            <span onClick={this.insertImage.bind(this)} title={`插入图片`}>
               <i className="fa fa-picture-o" aria-hidden="true"></i>
             </span>
-            <span onClick={this.deleteArticle.bind(this)}>
+            <span onClick={this.deleteArticle.bind(this)} title={`删除文章`}>
               <i className="fa fa-minus-circle" aria-hidden="true"></i>
             </span>
           </div>
