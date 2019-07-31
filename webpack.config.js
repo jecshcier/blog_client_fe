@@ -1,8 +1,8 @@
 //生产环境配置
 const webpack = require('webpack')
 const merge = require('webpack-merge')
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const path = require('path')
 const fs = require('fs-extra')
 const common = require('./webpack.common')
@@ -39,18 +39,14 @@ const config = (env) => {
       module: {
         rules: [{
           test: /\.css$/,
-          use: ExtractTextPlugin.extract({
-            fallback: "style-loader",
-            use: ['css-loader', 'postcss-loader']
-          })
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
         }]
       },
       plugins: [
-        new UglifyJsPlugin({
-          test: /\.js($|\?)/i,
-          exclude: /(node_modules|bower_components)/
+        new MiniCssExtractPlugin({
+          filename:'css/[name]-[hash].css'
         }),
-        new ExtractTextPlugin('css/[name].css'),
+        new OptimizeCssAssetsPlugin(),
         copyDevFiles()
       ]
     })

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "webpack-dev-server --env.MODE=dev",
-    "start:product": "webpack --env.MODE=product --progress --colors",
+    "start:product": "webpack --env.MODE=product --mode production --progress --colors",
     "start:init": "webpack --env.MODE=init --progress --colors"
   },
   "keywords": [
@@ -21,6 +21,7 @@
     "mini-css-extract-plugin": "^0.8.0",
     "moment": "^2.24.0",
     "npm": "^5.10.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "react": "^16.8.4",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.8.4"

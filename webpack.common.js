@@ -5,7 +5,6 @@ const webpack = require('webpack')
 module.exports = {
   entry: {
     main: './dev/index.js'
-    // vendor: ['react', 'react-dom', 'antd', 'lodash', 'moment']
   },
   output: {
     filename: 'js/[name]-[hash].js',

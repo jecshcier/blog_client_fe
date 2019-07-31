@@ -212,6 +212,7 @@ class Editor extends React.Component {
 
   render() {
     let _this = this
+    _this.imageUrl = window.btoa(unescape(encodeURIComponent(_this.props.article)))
     return (<div className="editor-view">
       {
         this.props.rootDir ? <div>
