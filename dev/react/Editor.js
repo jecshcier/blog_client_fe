@@ -18,6 +18,8 @@ class Editor extends React.Component {
     this.state = {
       modal: null
     }
+
+    this.imageUrl = window.btoa(unescape(encodeURIComponent(this.props.article)))
   }
 
   componentDidMount = () => {
@@ -78,14 +80,14 @@ class Editor extends React.Component {
       app.once('createFileCallback', (event, data) => {
         console.log(data)
         if (!data) {
-          let url = `${window.localStorage.domain}/images/${_this.props.article}/${fileName}`
+          let url = `${window.localStorage.domain}/images/${_this.imageUrl}/${fileName}`
           _this.cm.replaceSelection(`![${fileName}](${url})\n`)
         } else {
           message.error("图片储存失败！")
         }
       })
       app.send('createFile', {
-        url: _this.props.rootDir + '/static/images/' + _this.props.article + '/' + fileName,
+        url: _this.props.rootDir + '/static/images/' + _this.imageUrl + '/' + fileName,
         content: evt.target.result.replace(/^data:image\/\w+;base64,/, ""),
         base64: true,
         callback: 'createFileCallback'
@@ -123,15 +125,15 @@ class Editor extends React.Component {
             console.log(el)
             app.once('copyFileCallback', (event, data) => {
               if (!data) {
-                let url = `${window.localStorage.domain}/images/${this.props.article}/${el}`
-                this.cm.replaceSelection(`![${el}](${url})\n`)
+                let url = `${window.localStorage.domain}/images/${this.imageUrl}/${fileName}`
+                this.cm.replaceSelection(`![${fileName}](${url})\n`)
               } else {
                 message.error(data.message)
               }
             })
             app.send('copyFile', {
               url: el,
-              targetUrl: `${this.props.rootDir}/static/images/${this.props.article}/${fileName}`,
+              targetUrl: `${this.props.rootDir}/static/images/${this.imageUrl}/${fileName}`,
               overwirte: true,
               callback: 'copyFileCallback'
             })
@@ -290,19 +292,20 @@ class Editor extends React.Component {
                 let name = el.name.split('.')
                 let pos = name[name.length - 1]
                 pos = pos.toLowerCase()
+                let fileName = +new Date() + index + '.' + pos
                 if (imgArr.indexOf(pos) !== -1) {
                   console.log(el)
                   app.once('copyFileCallback', (event, data) => {
                     if (!data) {
-                      let url = `${window.localStorage.domain}/images/${this.props.article}/${el.name}`
-                      editor.replaceSelection(`![${el.name}](${url})\n`)
+                      let url = `${window.localStorage.domain}/images/${this.imageUrl}/${fileName}`
+                      editor.replaceSelection(`![${fileName}](${url})\n`)
                     } else {
                       message.error(data.message)
                     }
                   })
                   app.send('copyFile', {
                     url: el.path,
-                    targetUrl: `${this.props.rootDir}/static/images/${this.props.article}/${el.name}`,
+                    targetUrl: `${this.props.rootDir}/static/images/${this.imageUrl}/${fileName}`,
                     overwirte: true,
                     callback: 'copyFileCallback'
                   })
