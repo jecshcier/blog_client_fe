@@ -2,6 +2,8 @@
 
 目前做了mac版本。传送门https://github.com/jecshcier/blog_client_fe/releases
 
+如果有windows版本需要，可以联系我。
+
 这里只是前端部分，使用webpack + react + codeMirror构建。
 
 基于cherry框架（自己集成了electron的一些通用接口），了解源码请移步https://github.com/jecshcier/cherry2
