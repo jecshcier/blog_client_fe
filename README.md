@@ -2,7 +2,7 @@
 
 目前做了mac版本。传送门https://github.com/jecshcier/blog_client_fe/releases
 
-如果有windows版本需要，可以联系我。
+如果有windows版本需要，可以联系我，或者自己打包。
 
 这里只是前端部分，使用webpack + react + codeMirror构建。
 
