@@ -27,10 +27,9 @@
 
 ### 创建文章
 
-可以选择对应的标签、类型、关键字创建文章，标签的创建见下文。
+可以选择对应的标签、类型、关键字创建文章，标签的创建见标签管理。
 
-![3](https://blog.cshayne.cn/images/MjAxOS0wMy0xMS3lhpnkuobkuIDkuKpibG9n5a6i5oi356uvLi4uLm1k/3.png)
-
+![3](https://blog.cshayne.cn/images/3.png)
 
 ### 标签管理
 
