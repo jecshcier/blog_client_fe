@@ -33,6 +33,8 @@
 
 选择好hugo的静态资源根目录后，可以选择对应的标签、类型、关键字创建文章，标签的创建见标签管理。
 
+默认只会在hugo根目录/content/post目录下读取、创建文章。
+
 ![3](https://blog.cshayne.cn/images/3.png)
 
 ### 标签管理
