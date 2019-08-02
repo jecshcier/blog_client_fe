@@ -97,11 +97,55 @@ class Editor extends React.Component {
   }
 
   chooseHexoRoot = () => {
-    app.once('getFilesUrlCallback', (event, data) => {
-      this.props.changeRootDir(data[0])
+    const _this = this
+    app.removeAllListeners('getFilesUrlCallback')
+    app.once('getFilesUrlCallback', (event, filesUrl) => {
+      // this.props.changeRootDir(filesUrl[0])
+      console.log("=================hugo=====================")
+      let hugoRoot = filesUrl[0]
+      //判断选择的文件地址是否为hugo目录
+      app.once('urlIsExistCallback', function(event, fileFlag) {
+        console.log("=================判断是否为hugo目录=====================")
+        if(fileFlag){
+          //如果hugo目录下没有blog.config.js文件，创建一个
+          app.once('urlIsExistCallback', function(event, fileFlag2) {
+            console.log("=================判断blog.config.js=====================")
+            console.log(fileFlag2)
+            if(!fileFlag2){
+              app.once('createFileCallback', function(event, data) {
+                console.log(data)
+                if(!data){
+                  console.log("blog.config.js创建成功~")
+                  _this.props.changeRootDir(hugoRoot)
+                }else{
+                  message.error("blog.config.js创建失败，请前往hugo根目录手动创建blog.config.js!")
+                }
+              })
+              app.send('createFile', {
+                url: `${hugoRoot}/blog.config.js`,
+                content: "",
+                base64: false,
+                callback: 'createFileCallback'
+              })
+            }else{
+              _this.props.changeRootDir(hugoRoot)
+            }
+          })
+          app.send('urlIsExist', {
+            url: `${hugoRoot}/blog.config.js`,
+            callback: 'urlIsExistCallback'
+          })
+        }else{
+          message.error("请选择正确的hugo根目录！")
+        }
+      })
+      app.send('urlIsExist', {
+        url: `${hugoRoot}/content/post`,
+        callback: 'urlIsExistCallback'
+      })
     })
     app.send('getFilesUrl', {
-      callback: 'getFilesUrlCallback'
+      success: 'getFilesUrlCallback'
     })
   }
 
@@ -114,6 +158,7 @@ class Editor extends React.Component {
       message.error("请先配置域名！")
       return false
     }
+    app.removeAllListeners('getFilesUrlCallback')
     app.once('getFilesUrlCallback', (event, data) => {
       if (data.length) {
         data.forEach((el, index) => {
@@ -142,7 +187,7 @@ class Editor extends React.Component {
       }
     })
     app.send('getFilesUrl', {
-      callback: 'getFilesUrlCallback'
+      success: 'getFilesUrlCallback'
     })
   }
 

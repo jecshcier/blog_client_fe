@@ -77,11 +77,14 @@ class ToolBar extends React.Component {
   chooseHexoRoot = () => {
     //获取选择的文件地址
     const _this = this
+    app.removeAllListeners('getFilesUrlCallback')
     app.once('getFilesUrlCallback', (event, filesUrl) => {
       // this.props.changeRootDir(filesUrl[0])
+      console.log("=================hugo=====================")
       let hugoRoot = filesUrl[0]
       //判断选择的文件地址是否为hugo目录
       app.once('urlIsExistCallback', function(event, fileFlag) {
+        console.log("=================判断是否为hugo目录=====================")
         if(fileFlag){
           //如果hugo目录下没有blog.config.js文件，创建一个
           app.once('urlIsExistCallback', function(event, fileFlag2) {
@@ -121,7 +124,7 @@ class ToolBar extends React.Component {
       })
     })
     app.send('getFilesUrl', {
-      callback: 'getFilesUrlCallback'
+      success: 'getFilesUrlCallback'
     })
 
   }
