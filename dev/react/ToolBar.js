@@ -23,7 +23,7 @@ class ToolBar extends React.Component {
           if (!data.err) {
             resolve(data.toString())
           } else {
-            reject(data.message)
+            reject(("找不到blog.config.js文件,请重新选择hugo根目录，或者手动前往hugo根目录创建！"))
           }
         })
         app.send('loadFile', {
@@ -75,12 +75,55 @@ class ToolBar extends React.Component {
   }
 
   chooseHexoRoot = () => {
-    app.once('getFilesUrlCallback', (event, data) => {
-      this.props.changeRootDir(data[0])
+    //获取选择的文件地址
+    const _this = this
+    app.once('getFilesUrlCallback', (event, filesUrl) => {
+      // this.props.changeRootDir(filesUrl[0])
+      let hugoRoot = filesUrl[0]
+      //判断选择的文件地址是否为hugo目录
+      app.once('urlIsExistCallback', function(event, fileFlag) {
+        if(fileFlag){
+          //如果hugo目录下没有blog.config.js文件，创建一个
+          app.once('urlIsExistCallback', function(event, fileFlag2) {
+            console.log("=================判断blog.config.js=====================")
+            console.log(fileFlag2)
+            if(!fileFlag2){
+              app.once('createFileCallback', function(event, data) {
+                console.log(data)
+                if(!data){
+                  console.log("blog.config.js创建成功~")
+                  _this.props.changeRootDir(hugoRoot)
+                }else{
+                  message.error("blog.config.js创建失败，请前往hugo根目录手动创建blog.config.js!")
+                }
+              })
+              app.send('createFile', {
+                url: `${hugoRoot}/blog.config.js`,
+                content: "",
+                base64: false,
+                callback: 'createFileCallback'
+              })
+            }else{
+              _this.props.changeRootDir(hugoRoot)
+            }
+          })
+          app.send('urlIsExist', {
+            url: `${hugoRoot}/blog.config.js`,
+            callback: 'urlIsExistCallback'
+          })
+        }else{
+          message.error("请选择正确的hugo根目录！")
+        }
+      })
+      app.send('urlIsExist', {
+        url: `${hugoRoot}/content/post`,
+        callback: 'urlIsExistCallback'
+      })
     })
     app.send('getFilesUrl', {
       callback: 'getFilesUrlCallback'
     })
+
   }
 
   handleOk = (data) => {
