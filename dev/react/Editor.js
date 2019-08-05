@@ -145,7 +145,8 @@ class Editor extends React.Component {
       })
     })
     app.send('getFilesUrl', {
-      success: 'getFilesUrlCallback'
+      success: 'getFilesUrlCallback',
+      type:'dir'
     })
   }
 
@@ -187,7 +188,8 @@ class Editor extends React.Component {
       }
     })
     app.send('getFilesUrl', {
-      success: 'getFilesUrlCallback'
+      success: 'getFilesUrlCallback',
+      type:'file'
     })
   }
 

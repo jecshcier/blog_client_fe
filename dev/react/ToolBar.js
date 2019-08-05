@@ -124,7 +124,8 @@ class ToolBar extends React.Component {
       })
     })
     app.send('getFilesUrl', {
-      success: 'getFilesUrlCallback'
+      success: 'getFilesUrlCallback',
+      type:'dir'
     })
 
   }
@@ -253,17 +254,31 @@ class ToolBar extends React.Component {
     this.gen = true
     app.once('getSystemKeyCallback', (event, data) => {
       console.log(data)
-      app.send('execCommand', {
-        command: 'cd ' + _this.props.rootDir + ' && /usr/local/bin/hugo -F --buildFuture',
-        options: {
-          cwd: _this.props.rootDir,
-          env: null,
-          windowsHide: false,
-          maxBuffer: 200 * 1024
-        },
-        systemKey: data,
-        callback: 'execCommandCallback'
-      })
+      if(window.os === "win32"){
+        app.send('execCommand', {
+          command: 'cd ' + _this.props.rootDir + ' && hugo -F --buildFuture',
+          options: {
+            cwd: _this.props.rootDir,
+            env: null,
+            windowsHide: false,
+            maxBuffer: 200 * 1024
+          },
+          systemKey: data,
+          callback: 'execCommandCallback'
+        })
+      }else{
+        app.send('execCommand', {
+          command: 'cd ' + _this.props.rootDir + ' && /usr/local/bin/hugo -F --buildFuture',
+          options: {
+            cwd: _this.props.rootDir,
+            env: null,
+            windowsHide: false,
+            maxBuffer: 200 * 1024
+          },
+          systemKey: data,
+          callback: 'execCommandCallback'
+        })
+      }
     })
     app.once('execCommandCallback', function (event, data) {
       _this.gen = false

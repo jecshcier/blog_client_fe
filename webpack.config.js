@@ -25,7 +25,8 @@ const config = (env) => {
         contentBase: path.join(__dirname, "dist"),
         compress: true,
         port: 9000,
-        hot: true
+        hot: true,
+        host:"10.88.207.112"
       },
       plugins: [
         new webpack.HotModuleReplacementPlugin()
