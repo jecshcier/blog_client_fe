@@ -38,7 +38,7 @@ class AddArticle extends React.Component {
   }
 
   modalHandleOk = () => {
-    if (this.state.currentSort && this.state.currentTag.length && this.state.value) {
+    if (this.state.currentSort && this.state.value) {
       this.props.onOk({
         value: this.state.value,
         currentSort: this.state.currentSort,
@@ -52,7 +52,7 @@ class AddArticle extends React.Component {
         currentKeywords: []
       })
     } else {
-      message.warning("信息不完整")
+      message.warning("文章名称、分类必须填写")
     }
   }
 
