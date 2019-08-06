@@ -195,7 +195,7 @@ class ToolBar extends React.Component {
       if (!data.err) {
         message.success('生成成功！')
       } else {
-        message.error(data.message)
+        message.error(`生成失败，请确保hugo命令行地址正确!  \n${data.message}`)
       }
     })
     app.once('getSystemKeyCallback', (event, data) => {
