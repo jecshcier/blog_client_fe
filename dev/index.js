@@ -22,6 +22,11 @@ class Main extends React.Component {
   componentDidMount() {
     app.once('getSystemCodeCallback', function (event, data) {
       window.os = data
+      if(window.os === 'darwin'){
+        window.localStorage.cliPath = window.localStorage.cliPath ? window.localStorage.cliPath : "/usr/local/bin/hugo"
+      }else if(window.os === 'win32'){
+        window.localStorage.cliPath = window.localStorage.cliPath ? window.localStorage.cliPath : "C:\\hugo\\hugo.exe"
+      }
     })
     app.send('getSystemCode', {
       callback: 'getSystemCodeCallback'
@@ -112,7 +117,6 @@ class Main extends React.Component {
     this.setState({
       hexoRoot: hexoRoot
     })
-    window.localStorage.hexoRoot = hexoRoot
     this.changeArticleArr(hexoRoot)
   }
 

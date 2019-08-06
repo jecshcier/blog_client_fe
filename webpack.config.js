@@ -26,7 +26,7 @@ const config = (env) => {
         compress: true,
         port: 9000,
         hot: true,
-        host:"10.88.207.112"
+        host: "127.0.0.1"
       },
       plugins: [
         new webpack.HotModuleReplacementPlugin()
@@ -45,7 +45,7 @@ const config = (env) => {
       },
       plugins: [
         new MiniCssExtractPlugin({
-          filename:'css/[name]-[hash].css'
+          filename: 'css/[name]-[hash].css'
         }),
         new OptimizeCssAssetsPlugin(),
         copyDevFiles()

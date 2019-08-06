@@ -8,6 +8,7 @@ import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/mode/markdown/markdown.js'
 import 'codemirror/theme/monokai.css'
 import 'codemirror/lib/codemirror.css'
+import ConfigItem from "./Config"
 
 
 const imgArr = ['png', 'jpg', 'gif', 'jpeg']
@@ -31,11 +32,9 @@ class Editor extends React.Component {
     this.props.changeContent(editor, data, value)
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log(nextProps)
-    console.log(this.props.name)
-    return true
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return true
+  // }
 
   saveArticle = () => {
     if (this.saveFlag) {
@@ -68,6 +67,12 @@ class Editor extends React.Component {
     })
   }
 
+  openConfig = () => {
+    this.setState({
+      modal: 'config'
+    })
+  }
+
   loadClipboardImg = () => {
     this.setState({
       modal: null
@@ -96,59 +101,6 @@ class Editor extends React.Component {
     reader.readAsDataURL(this.state.clipboardImg)
   }
 
-  chooseHexoRoot = () => {
-    const _this = this
-    app.removeAllListeners('getFilesUrlCallback')
-    app.once('getFilesUrlCallback', (event, filesUrl) => {
-      // this.props.changeRootDir(filesUrl[0])
-      console.log("=================hugo=====================")
-      let hugoRoot = filesUrl[0]
-      //判断选择的文件地址是否为hugo目录
-      app.once('urlIsExistCallback', function(event, fileFlag) {
-        console.log("=================判断是否为hugo目录=====================")
-        if(fileFlag){
-          //如果hugo目录下没有blog.config.js文件，创建一个
-          app.once('urlIsExistCallback', function(event, fileFlag2) {
-            console.log("=================判断blog.config.js=====================")
-            console.log(fileFlag2)
-            if(!fileFlag2){
-              app.once('createFileCallback', function(event, data) {
-                console.log(data)
-                if(!data){
-                  console.log("blog.config.js创建成功~")
-                  _this.props.changeRootDir(hugoRoot)
-                }else{
-                  message.error("blog.config.js创建失败，请前往hugo根目录手动创建blog.config.js!")
-                }
-              })
-              app.send('createFile', {
-                url: `${hugoRoot}/blog.config.js`,
-                content: "",
-                base64: false,
-                callback: 'createFileCallback'
-              })
-            }else{
-              _this.props.changeRootDir(hugoRoot)
-            }
-          })
-          app.send('urlIsExist', {
-            url: `${hugoRoot}/blog.config.js`,
-            callback: 'urlIsExistCallback'
-          })
-        }else{
-          message.error("请选择正确的hugo根目录！")
-        }
-      })
-      app.send('urlIsExist', {
-        url: `${hugoRoot}/content/post`,
-        callback: 'urlIsExistCallback'
-      })
-    })
-    app.send('getFilesUrl', {
-      success: 'getFilesUrlCallback',
-      type:'dir'
-    })
-  }
 
   insertCode() {
     this.cm.replaceSelection('```javascript\n\n```')
@@ -377,11 +329,14 @@ class Editor extends React.Component {
           </div>
         </div> : <div className="editor-pre-view">
           <Button icon="search" onClick={() => {
-            this.chooseHexoRoot()
+            this.openConfig()
           }}>选择博客根目录</Button>
         </div>
       }
-
+      <ConfigItem show={this.state.modal === 'config'}
+                  closeModal={this.closeModal}
+                  changeRootDir={this.props.changeRootDir}
+      />
       <Modal onOk={this.loadClipboardImg}
              title="插入图片"
              visible={this.state.modal === 'loadC'}

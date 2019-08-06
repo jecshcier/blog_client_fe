@@ -1,7 +1,8 @@
 import React from 'react'
-import {Input, message, Modal} from 'antd'
+import {Input, message, Modal, Button} from 'antd'
 import AddArticle from './AddArticle'
 import EditTags from './editTags'
+import ConfigItem from './Config'
 import moment from 'moment'
 
 class ToolBar extends React.Component {
@@ -9,7 +10,6 @@ class ToolBar extends React.Component {
     super(props)
     this.state = {
       modal: null,
-      domain: window.localStorage.domain ? window.localStorage.domain : '',
       sortArr: [],
       tagsArr: [],
       keywordsArr: []
@@ -74,61 +74,6 @@ class ToolBar extends React.Component {
     }
   }
 
-  chooseHexoRoot = () => {
-    //获取选择的文件地址
-    const _this = this
-    app.removeAllListeners('getFilesUrlCallback')
-    app.once('getFilesUrlCallback', (event, filesUrl) => {
-      // this.props.changeRootDir(filesUrl[0])
-      console.log("=================hugo=====================")
-      let hugoRoot = filesUrl[0]
-      //判断选择的文件地址是否为hugo目录
-      app.once('urlIsExistCallback', function(event, fileFlag) {
-        console.log("=================判断是否为hugo目录=====================")
-        if(fileFlag){
-          //如果hugo目录下没有blog.config.js文件，创建一个
-          app.once('urlIsExistCallback', function(event, fileFlag2) {
-            console.log("=================判断blog.config.js=====================")
-            console.log(fileFlag2)
-            if(!fileFlag2){
-              app.once('createFileCallback', function(event, data) {
-                console.log(data)
-                if(!data){
-                  console.log("blog.config.js创建成功~")
-                  _this.props.changeRootDir(hugoRoot)
-                }else{
-                  message.error("blog.config.js创建失败，请前往hugo根目录手动创建blog.config.js!")
-                }
-              })
-              app.send('createFile', {
-                url: `${hugoRoot}/blog.config.js`,
-                content: "",
-                base64: false,
-                callback: 'createFileCallback'
-              })
-            }else{
-              _this.props.changeRootDir(hugoRoot)
-            }
-          })
-          app.send('urlIsExist', {
-            url: `${hugoRoot}/blog.config.js`,
-            callback: 'urlIsExistCallback'
-          })
-        }else{
-          message.error("请选择正确的hugo根目录！")
-        }
-      })
-      app.send('urlIsExist', {
-        url: `${hugoRoot}/content/post`,
-        callback: 'urlIsExistCallback'
-      })
-    })
-    app.send('getFilesUrl', {
-      success: 'getFilesUrlCallback',
-      type:'dir'
-    })
-
-  }
 
   handleOk = (data) => {
     let articleContent = `---\ntitle: ${data.value}\ncategories: \n - ${data.currentSort}\ndate: ${moment().format("YYYY-MM-DD HH:mm:ss")}\ntags: [${data.currentTag}]\nkeywords: [${data.currentKeywords}]\n---\n\n\n<!-- more -->`
@@ -157,23 +102,9 @@ class ToolBar extends React.Component {
     })
   }
 
-  domainConfig = () => {
+  openConfig = () => {
     this.setState({
-      modal: 'addD'
-    })
-  }
-
-
-  setDomain = () => {
-    window.localStorage.domain = this.state.domain
-    this.setState({
-      modal: null
-    })
-  }
-
-  domainChange = (e) => {
-    this.setState({
-      domain: e.target.value
+      modal: 'config'
     })
   }
 
@@ -242,6 +173,11 @@ class ToolBar extends React.Component {
   generator = () => {
     console.log(this.gen)
     const _this = this
+    const hugoCli = window.localStorage.cliPath
+    if (!hugoCli) {
+      message.error('请先配置hugo命令行位置')
+      return false
+    }
     if (this.gen) {
       message.error('操作过于频繁！')
       return false
@@ -252,34 +188,6 @@ class ToolBar extends React.Component {
       return false
     }
     this.gen = true
-    app.once('getSystemKeyCallback', (event, data) => {
-      console.log(data)
-      if(window.os === "win32"){
-        app.send('execCommand', {
-          command: 'cd ' + _this.props.rootDir + ' && hugo -F --buildFuture',
-          options: {
-            cwd: _this.props.rootDir,
-            env: null,
-            windowsHide: false,
-            maxBuffer: 200 * 1024
-          },
-          systemKey: data,
-          callback: 'execCommandCallback'
-        })
-      }else{
-        app.send('execCommand', {
-          command: 'cd ' + _this.props.rootDir + ' && /usr/local/bin/hugo -F --buildFuture',
-          options: {
-            cwd: _this.props.rootDir,
-            env: null,
-            windowsHide: false,
-            maxBuffer: 200 * 1024
-          },
-          systemKey: data,
-          callback: 'execCommandCallback'
-        })
-      }
-    })
     app.once('execCommandCallback', function (event, data) {
       _this.gen = false
       console.log(data)
@@ -287,9 +195,24 @@ class ToolBar extends React.Component {
       if (!data.err) {
         message.success('生成成功！')
       } else {
-        message.error(data.message)
+        message.error("生成失败，请确认hugo命令行位置配置正确")
       }
     })
+    app.once('getSystemKeyCallback', (event, data) => {
+      console.log(data)
+      app.send('execCommand', {
+        command: 'cd ' + _this.props.rootDir + ' && ' + hugoCli + ' -F --buildFuture',
+        options: {
+          cwd: _this.props.rootDir,
+          env: null,
+          windowsHide: false,
+          maxBuffer: 200 * 1024
+        },
+        systemKey: data,
+        callback: 'execCommandCallback'
+      })
+    })
+
     app.send('getSystemKey', {
       callback: 'getSystemKeyCallback'
     })
@@ -299,14 +222,6 @@ class ToolBar extends React.Component {
   render() {
     return (<div className="tool-bar">
       <div className="tools">
-        <span onClick={this.chooseHexoRoot}>
-          <i className="fa fa-folder-open-o" aria-hidden="true"></i>
-          <span>博客路径</span>
-        </span>
-        <span onClick={this.domainConfig}>
-        <i className="fa fa-link" aria-hidden="true"></i>
-        <span>配置域名</span>
-        </span>
         <span onClick={this.addArticle}>
           <i className="fa fa-plus" aria-hidden="true" title="新建文章"></i>
           <span>新建文章</span>
@@ -319,15 +234,15 @@ class ToolBar extends React.Component {
           <i className="fa fa-cloud-upload" aria-hidden="true" title="生成静态文件"></i>
           <span>生成静态文件</span>
         </span>
+        <span onClick={this.openConfig}>
+          <i className="fa fa-cog" aria-hidden="true" title="生成静态文件"></i>
+          <span>系统设置</span>
+        </span>
       </div>
-      <span title={this.props.rootDir ? this.props.rootDir : null} style={{
-        maxWidth: '400px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
-      }}>
-        当前博客路径：{this.props.rootDir ? this.props.rootDir : null}
-      </span>
+      <ConfigItem show={this.state.modal === 'config'}
+                  closeModal={this.closeModal}
+                  changeRootDir={this.props.changeRootDir}
+      />
       <AddArticle ref="groupModal"
                   onOk={this.handleOk}
                   hexoRoot={this.props.rootDir}
@@ -337,12 +252,6 @@ class ToolBar extends React.Component {
                   sortArr={this.state.sortArr}
                   keywordsArr={this.state.keywordsArr}
                   placeholder="文章标题" key="modal"/>
-      <Modal onOk={this.setDomain}
-             title="配置域名"
-             visible={this.state.modal === 'addD'}
-             onCancel={this.closeModal}>
-        <Input type="text" onChange={this.domainChange} value={this.state.domain}/>
-      </Modal>
       <EditTags hexoRoot={this.props.rootDir}
                 show={this.state.modal === 'editT'}
                 closeModal={this.closeModal} modalName="编辑标签"

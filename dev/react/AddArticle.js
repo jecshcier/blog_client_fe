@@ -117,7 +117,6 @@ class AddArticle extends React.Component {
 
 
   render() {
-    console.log(this.props)
     return <Modal
       title={this.props.modalName}
       visible={this.props.show}
