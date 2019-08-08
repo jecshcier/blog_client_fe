@@ -52,5 +52,7 @@
 
 生成静态资源会执行hugo命令（需要您安装好hugo cli），将静态资源一件打包在public目录下。你就可以将public目录里的所有文件放到你想要放的地方去啦！
 
+在系统设置 - hugo命令行位置中可以设置hugo cli的位置，mac下一般为/usr/local/bin/hugo，windows取决于hugo的安装方式，如不知道hugo安装在何处，可以使用`where hugo`来查看hugo所在的位置。
+
 
 ---待更新         
