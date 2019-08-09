@@ -22,6 +22,7 @@ class Main extends React.Component {
   componentDidMount() {
     app.once('getSystemCodeCallback', function (event, data) {
       window.os = data
+      window.localStorage.postPath = window.localStorage.postPath ? window.localStorage.postPath : "content/post"
       if(window.os === 'darwin'){
         window.localStorage.cliPath = window.localStorage.cliPath ? window.localStorage.cliPath : "/usr/local/bin/hugo"
       }else if(window.os === 'win32'){
@@ -57,17 +58,17 @@ class Main extends React.Component {
           let fileNameArr = data[i].split('.')
           if (fileNameArr[fileNameArr.length - 1] === 'md' && data[i] !== '_index.md') {
             articleArr.push({
-              path: hexoRoot + '/content/post/' + data[i],
+              path: `${hexoRoot}/${window.localStorage.postPath}/${data[i]}`,
               fileName: data[i],
             })
           }
         }
         this.setState({
           articleArr: articleArr,
-          current: activeArticleName ? hexoRoot + '/content/post/' + activeArticleName : articleArr[0].path,
+          current: activeArticleName ? `${hexoRoot}/${window.localStorage.postPath}/${activeArticleName}` : articleArr[0].path,
           currentName: activeArticleName ? activeArticleName : articleArr[0].fileName
         }, () => {
-          let currentPath = activeArticleName ? hexoRoot + '/content/post/' + activeArticleName : articleArr[0].path
+          let currentPath = activeArticleName ? `${hexoRoot}/${window.localStorage.postPath}/${activeArticleName}` : articleArr[0].path
           let currentName = activeArticleName ? activeArticleName : articleArr[0].fileName
           console.log(currentName)
           console.log(currentPath)
@@ -83,7 +84,7 @@ class Main extends React.Component {
     })
     app.send('getFolder', {
       callback: 'getFolderCallback',
-      url: hexoRoot + '/content/post'
+      url: `${hexoRoot}/${window.localStorage.postPath}`
     })
   }
 

@@ -86,7 +86,7 @@ class ToolBar extends React.Component {
       }
     })
     app.send('createFile', {
-      url: this.props.rootDir + '/content/post/' + articleName,
+      url: `${this.props.rootDir}/${window.localStorage.postPath}/${articleName}`,
       content: articleContent,
       base64: false,
       callback: 'createFileCallback'

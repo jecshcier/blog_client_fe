@@ -9,6 +9,7 @@ class ConfigItem extends React.Component {
       domain: window.localStorage.domain ? window.localStorage.domain : '',
       cliPath: window.localStorage.cliPath ? window.localStorage.cliPath : '',
       blogPath: window.localStorage.hexoRoot ? window.localStorage.hexoRoot : '',
+      postPath: window.localStorage.postPath ? window.localStorage.postPath : '',
     }
     console.log(this.state)
   }
@@ -33,7 +34,7 @@ class ConfigItem extends React.Component {
         }
       })
       app.send('urlIsExist', {
-        url: `${hugoRoot}/content/post`,
+        url: `${hugoRoot}/content`,
         callback: 'urlIsExistCallback'
       })
     })
@@ -57,7 +58,8 @@ class ConfigItem extends React.Component {
       this.setState({
         domain: window.localStorage.domain || '',
         cliPath: window.localStorage.cliPath || '',
-        blogPath: window.localStorage.hexoRoot || ''
+        blogPath: window.localStorage.hexoRoot || '',
+        postPath: window.localStorage.postPath || ''
       })
     }
   }
@@ -105,6 +107,10 @@ class ConfigItem extends React.Component {
       window.localStorage.hexoRoot = this.state.blogPath
       this.initHugoPath(this.state.blogPath)
     }
+    if(this.state.postPath !== window.localStorage.postPath){
+      window.localStorage.postPath = this.state.postPath
+      this.initHugoPath(this.state.blogPath)
+    }
     message.success('设置已保存')
     this.props.closeModal()
   }
@@ -123,6 +129,12 @@ class ConfigItem extends React.Component {
           <span>博客路径:</span>
           <span>&nbsp;{this.state.blogPath ? this.state.blogPath : ''}&nbsp;</span>
           <Button type="default" onClick={this.chooseHexoRoot} size={'small'}>设置</Button>
+        </div>
+        <div>
+          <span>文章目录:</span>
+          <Input type="text" onChange={(e) => {
+            this.inputOnchange(e, 'postPath')
+          }} value={this.state.postPath}/>
         </div>
         <div>
           <span>配置域名:</span>
